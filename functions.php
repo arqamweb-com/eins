@@ -136,6 +136,8 @@ add_action('wp_enqueue_scripts', 'my_custom_scripts');
 
 
 require_once(get_stylesheet_directory() . '/inc/features.php');
+require_once(get_stylesheet_directory() . '/inc/category-badges.php');
+require_once(get_stylesheet_directory() . '/inc/exit-popup.php');
 
 add_filter('astra_page_layout', function () {
     return 'no-sidebar';
@@ -231,8 +233,8 @@ function frontend_customizer_settings($wp_customize)
         'panel' => 'frontend_panel',
     ]);
 
-    // 3. الـ 3 صور
-    for ($i = 1; $i <= 3; $i++) {
+    // 3. صورتين السلايدر
+    for ($i = 1; $i <= 2; $i++) {
         $wp_customize->add_setting("hero_slide_$i", [
             'default'           => '',
             'sanitize_callback' => 'esc_url_raw',
