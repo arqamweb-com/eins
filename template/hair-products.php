@@ -159,17 +159,9 @@ get_header(); ?>
 
                                 <article class="group relative bg-card rounded-lg overflow-hidden hover-lift">
 
-                                    <?php if ($product->is_on_sale()) : ?>
-
-                                        <div class="absolute top-4 left-4 z-10">
-
-                                            <span class="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
-                                                <?php echo esc_html__("Sale", "arqamweb"); ?>
-                                            </span>
-
-                                        </div>
-
-                                    <?php endif; ?>
+                                    <?php eins_category_badges(get_the_ID(), [
+                                        $product->is_on_sale() ? __("Sale", "arqamweb") : '',
+                                    ]); ?>
 
 
                                     <div class="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
