@@ -10,13 +10,21 @@ desktop.ini
 *.sublime-*
 *.sw?
 *.suo
+.claude/settings.local.json
 
 # Node / build
 node_modules/
 dist/
 dist-ssr/
 .vite/
+.cache/
 *.local
+
+# PHP / Composer
+vendor/
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpcs-cache
 
 # Logs
 *.log
@@ -28,8 +36,15 @@ pnpm-debug.log*
 # Env & secrets
 .env
 .env.*
+!.env.example
 
-# Archives / backups
+# Database dumps
+*.sql
+*.sql.gz
+
+# Archives / backups / temp
 *.zip
 *.tar.gz
 *.bak
+*.orig
+*.tmp

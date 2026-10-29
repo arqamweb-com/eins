@@ -35,7 +35,14 @@ if (!defined('ABSPATH')) {
 
 <div>
 	<main>
-		<?php get_template_part('template/frontpage/frontpage', 'slider'); ?>
+		<!-- عرض نوفمبر مكان السلايدر، ولما يخلص السلايدر بيرجع لوحده -->
+		<?php if (eins_offer_product()) : ?>
+			<?php get_template_part('template/frontpage/frontpage', 'offer'); ?>
+		<?php else : ?>
+			<?php get_template_part('template/frontpage/frontpage', 'slider'); ?>
+		<?php endif; ?>
+
+		<?php get_template_part('template/frontpage/frontpage', 'deal'); ?>
 
 		<?php get_template_part('template/frontpage/frontpage', 'best_sellers'); ?>
 

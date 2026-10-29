@@ -58,6 +58,11 @@ Template: astra
   position: relative;
 }
 
+/* Astra بيطلع Sale بتاعه على الكارت، والـ stack بتاعنا فيه Sale بالفعل */
+.woocommerce ul.products li.product .ast-onsale-card {
+  display: none;
+}
+
 .eins-badges {
   position: absolute;
   top: 1rem;
@@ -93,7 +98,7 @@ Template: astra
 }
 
 /* ===============================
-   Exit Pop-up (Concept A)
+   Offer Pop-up (Reminder)
    =============================== */
 .eins-exit-overlay {
   position: fixed;
@@ -192,67 +197,11 @@ Template: astra
   color: hsl(var(--primary));
 }
 
-.eins-exit-offer-code {
-  font-size: 0.85rem;
-  color: hsl(var(--muted-foreground));
-  letter-spacing: 0.08em;
-}
-
-.eins-exit-items {
-  text-align: start;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
-  padding: 4px 14px;
-  margin-bottom: 18px;
-}
-
-.eins-exit-items:empty {
-  display: none;
-}
-
-.eins-exit-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid hsl(var(--border));
-}
-
-.eins-exit-thumb {
-  width: 52px;
-  flex-shrink: 0;
-}
-
-.eins-exit-thumb img {
-  width: 52px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.eins-exit-name {
-  flex: 1;
-  font-size: 0.95rem;
-  line-height: 1.3;
-}
-
-.eins-exit-name span {
-  display: block;
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-}
-
-.eins-exit-price {
+.eins-exit-offer-plus {
+  font-size: 1rem;
   font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.eins-exit-total {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  font-weight: 600;
+  color: hsl(var(--foreground));
+  letter-spacing: 0.04em;
 }
 
 .eins-exit-cta {
@@ -397,5 +346,455 @@ Template: astra
 
   .eins-hero-next {
     right: 0.75rem;
+  }
+}
+
+/* ===============================
+   November Offer hero (Concept 4)
+   =============================== */
+.eins-offer {
+  display: grid;
+  min-height: calc(100vh - 110px);
+  background: hsl(var(--brand-cream));
+  overflow: hidden;
+}
+
+@media (min-width: 992px) {
+  .eins-offer {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.eins-offer-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 20px;
+}
+
+@media (min-width: 992px) {
+  .eins-offer-text {
+    padding: 64px 72px;
+  }
+}
+
+.eins-offer-eyebrow,
+.eins-deal-eyebrow {
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: hsl(var(--brand-neutral));
+}
+
+.eins-offer-num {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: clamp(96px, 15vw, 200px);
+  line-height: 0.9;
+  color: hsl(var(--primary));
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+
+.eins-offer-num sup {
+  position: static;
+  display: inline-block;
+  font-size: 0.35em;
+  line-height: 1;
+  vertical-align: top;
+  margin-top: 0.2em;
+  color: hsl(var(--brand-neutral));
+}
+
+.eins-offer-title {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: 500;
+  font-size: clamp(28px, 3.6vw, 46px);
+  line-height: 1.15;
+  color: hsl(var(--foreground));
+  margin: 14px 0;
+}
+
+.eins-offer-sub {
+  max-width: 480px;
+  font-size: 1.05rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+.eins-offer-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.eins-offer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 26px;
+  border: 1px solid hsl(var(--primary));
+  border-radius: 4px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.eins-offer-btn:hover,
+.eins-offer-btn:focus {
+  color: hsl(var(--primary-foreground));
+  transform: translateY(-2px);
+}
+
+.eins-offer-btn--ghost {
+  background: transparent;
+  color: hsl(var(--primary));
+}
+
+.eins-offer-btn--ghost:hover,
+.eins-offer-btn--ghost:focus {
+  background: hsl(var(--primary));
+}
+
+.eins-offer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 28px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.eins-offer-meta-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+.eins-offer-meta b {
+  display: block;
+  font-size: 1.4rem;
+  color: hsl(var(--primary));
+  font-variant-numeric: tabular-nums;
+}
+
+.eins-offer-meta span {
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.eins-offer-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 460px;
+  background: var(--gradient-hero, hsl(var(--brand-warm)));
+  overflow: hidden;
+}
+
+.eins-offer-ring {
+  position: absolute;
+  width: min(80%, 480px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--brand-neutral) / 0.5);
+}
+
+.eins-offer-ring::after {
+  content: "";
+  position: absolute;
+  inset: 24px;
+  border-radius: 50%;
+  border: 1px dashed hsl(var(--brand-neutral) / 0.45);
+  animation: eins-spin 40s linear infinite;
+}
+
+/* الإزازتين: كل واحدة بتطفو في توقيت مختلف وبميل عكس التانية */
+.eins-offer-bottles {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: min(70vh, 560px);
+  direction: ltr;
+}
+
+.eins-offer-bottle {
+  height: 100%;
+  width: auto;
+  filter: drop-shadow(0 40px 40px hsl(130 12% 12% / 0.35));
+}
+
+.eins-offer-bottle--1 {
+  --tilt: -8deg;
+  z-index: 2;
+  margin-right: -12%;
+  animation: eins-float 6s ease-in-out infinite;
+}
+
+.eins-offer-bottle--2 {
+  --tilt: 8deg;
+  position: relative;
+  height: 88%;
+  animation: eins-float 6s ease-in-out -3s infinite;
+}
+
+.eins-offer-bottle--2 img {
+  height: 100%;
+  width: auto;
+}
+
+.eins-offer-tag {
+  position: absolute;
+  top: 8%;
+  right: 4%;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 700;
+  font-size: 1rem;
+  animation: eins-pulse 2s ease-in-out infinite;
+}
+
+.eins-offer-badge {
+  position: absolute;
+  z-index: 3;
+  bottom: 8%;
+  inset-inline-start: 8%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: hsl(var(--background) / 0.95);
+  box-shadow: var(--shadow-product);
+  line-height: 1.4;
+}
+
+.eins-offer-badge b {
+  display: block;
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.eins-offer-badge ins {
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  margin-inline-end: 8px;
+}
+
+.eins-offer-badge del {
+  font-size: 0.9rem;
+  color: hsl(var(--muted-foreground));
+}
+
+@keyframes eins-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt));
+  }
+  50% {
+    transform: translateY(-18px) rotate(calc(var(--tilt) * 0.5));
+  }
+}
+
+@keyframes eins-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes eins-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 991px) {
+  .eins-offer-visual {
+    min-height: 400px;
+    padding: 40px 0 100px;
+  }
+
+  .eins-offer-bottles {
+    height: 340px;
+  }
+}
+
+/* ===============================
+   Deal of the Hour (Concept 3)
+   =============================== */
+.eins-deal {
+  background: hsl(var(--brand-dark));
+  color: hsl(var(--primary-foreground));
+}
+
+.eins-deal-head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.eins-deal-head h2 {
+  color: hsl(var(--primary-foreground));
+}
+
+.eins-deal-card {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  padding: 20px;
+  border-radius: 16px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.eins-deal-card[hidden] {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .eins-deal-card {
+    grid-template-columns: 1fr 1.1fr;
+    padding: 32px 48px 32px 32px;
+  }
+}
+
+.eins-deal-img {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: hsl(var(--brand-cream));
+}
+
+.eins-deal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.eins-deal-tag {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 1;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.eins-deal-note {
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: hsl(var(--brand-neutral));
+}
+
+.eins-deal-name {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: 500;
+  font-size: clamp(28px, 3.6vw, 42px);
+  line-height: 1.15;
+  margin: 10px 0 6px;
+}
+
+.eins-deal-name a {
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+.eins-deal-desc {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+.eins-deal-price {
+  margin: 18px 0 6px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+}
+
+.eins-deal-price del {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+}
+
+.eins-deal-price ins {
+  text-decoration: none;
+}
+
+.eins-deal-offer {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: hsl(var(--brand-cream));
+  color: hsl(var(--primary));
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.eins-deal-timer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.eins-deal-timer strong {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+
+.eins-deal-card a.button.eins-deal-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+  border-radius: 4px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.eins-deal-card .added_to_cart {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.eins-deal-next {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: hsl(var(--muted-foreground));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eins-offer-bottle,
+  .eins-offer-ring::after,
+  .eins-offer-tag {
+    animation: none;
   }
 }
