@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Deal of the Hour: خصم حقيقي لمنتج الساعة
+ * Deal of the Month: منتج واحد ثابت (Skin Revive) بخصم لحد آخر الشهر
  * الخصم بيتحدد من الـ Customizer (نسبة) أو من كوبون WooCommerce، وبيتحسب في السلة على السيرفر
  */
 
@@ -10,16 +10,34 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Customizer: Front End > Deal of the Hour
+ * Customizer: Front End > Deal of the Month
  */
 add_action('customize_register', function ($wp_customize) {
     $wp_customize->add_section('frontend_deal_section', [
-        'title'       => 'Deal of the Hour',
+        'title'       => 'Deal of the Month',
         'panel'       => 'frontend_panel',
-        'description' => 'المنتج بيتغير كل ساعة. الخصم بيتطبق على المنتج لو اتضاف للسلة في ساعته، ومنتج عرض نوفمبر مستثنى طول ما العرض شغال.',
+        'description' => 'منتج واحد ثابت بخصم لحد تاريخ الانتهاء. منتج عرض نوفمبر مستثنى من الخصم طول ما العرض شغال.',
     ]);
 
+    $products = ['' => '— Select —'];
+    foreach (wc_get_products(['status' => 'publish', 'limit' => -1]) as $product) {
+        $products[$product->get_id()] = $product->get_name();
+    }
+
     $fields = [
+        'deal_product' => [
+            'label'       => 'Deal Product',
+            'type'        => 'select',
+            'default'     => '',
+            'choices'     => $products,
+            'description' => 'لو فاضي بيدور على منتج اسمه Skin Revive.',
+        ],
+        'deal_end' => [
+            'label'       => 'Ends at (Y-m-d H:i)',
+            'type'        => 'text',
+            'default'     => '2026-11-30 23:59',
+            'description' => 'بتوقيت الموقع (Settings > General). بعدها السكشن بيختفي والخصم بيقف.',
+        ],
         'deal_discount_source' => [
             'label'   => 'Discount from',
             'type'    => 'select',
@@ -41,17 +59,11 @@ add_action('customize_register', function ($wp_customize) {
             'default'     => '',
             'description' => 'بياخد نوع وقيمة الخصم وتاريخ الانتهاء من الكوبون (Percentage أو Fixed). مش لازم العميل يكتب الكود.',
         ],
-        'deal_hold' => [
-            'label'       => 'Keep the price after the hour (minutes)',
-            'type'        => 'number',
-            'default'     => 30,
-            'description' => 'العميل اللي ضاف المنتج في ساعته بيفضل محتفظ بالسعر المدة دي بعد ما الساعة تخلص.',
-        ],
     ];
 
     foreach ($fields as $id => $field) {
         $sanitize = 'sanitize_text_field';
-        if ($field['type'] === 'number') {
+        if ($field['type'] === 'number' || $id === 'deal_product') {
             $sanitize = 'absint';
         }
 
@@ -67,50 +79,43 @@ add_action('customize_register', function ($wp_customize) {
 });
 
 /**
- * Deal products in the current language, in a fixed order (by default-language ID)
- * عشان الترتيب يبقى واحد في العربي والإنجليزي وعلى السيرفر والـ JS
+ * Deal end as a timestamp (0 if the date is invalid)
  */
-function eins_deal_products()
+function eins_deal_end()
 {
-    $ids = array_map('eins_offer_original_id', wc_get_products([
-        'status' => 'publish',
-        'limit'  => -1,
-        'return' => 'ids',
-    ]));
+    $end = date_create_immutable(get_theme_mod('deal_end', '2026-11-30 23:59'), wp_timezone());
 
-    $ids = array_unique($ids);
-    sort($ids);
-
-    $products = [];
-    foreach (array_slice($ids, 0, 8) as $id) {
-        $product = wc_get_product(apply_filters('wpml_object_id', $id, 'product', true));
-        if ($product && $product->is_visible()) {
-            $products[] = $product;
-        }
-    }
-
-    return $products;
+    return $end ? $end->getTimestamp() : 0;
 }
 
 /**
- * Current hour number (same as Math.floor(Date.now() / 36e5) in JS)
+ * Deal product in the current language (Customizer, or the "Skin Revive" product), null when the deal is over
  */
-function eins_deal_hour()
+function eins_deal_product()
 {
-    return intdiv(time(), HOUR_IN_SECONDS);
-}
-
-/**
- * Default-language ID of the product of the current hour
- */
-function eins_deal_current_id()
-{
-    $products = eins_deal_products();
-    if (!$products) {
-        return 0;
+    if (!function_exists('wc_get_product') || time() >= eins_deal_end()) {
+        return null;
     }
 
-    return eins_offer_original_id($products[eins_deal_hour() % count($products)]->get_id());
+    $id = (int) get_theme_mod('deal_product', 0);
+
+    if (!$id) {
+        $found = get_posts([
+            'post_type'        => 'product',
+            'post_status'      => 'publish',
+            's'                => 'Skin Revive',
+            'search_columns'   => ['post_title'],
+            'posts_per_page'   => 1,
+            'fields'           => 'ids',
+            'suppress_filters' => true,
+        ]);
+        $id = $found ? (int) $found[0] : 0;
+    }
+
+    $id = $id ? apply_filters('wpml_object_id', $id, 'product', true) : 0;
+    $product = $id ? wc_get_product($id) : null;
+
+    return ($product && $product->is_visible()) ? $product : null;
 }
 
 /**
@@ -148,25 +153,19 @@ function eins_deal_unit_discount($product, $price)
 }
 
 /**
- * Add to cart during the product's hour → remember the hour on the cart item
- */
-add_filter('woocommerce_add_cart_item_data', function ($data, $product_id) {
-    if (eins_offer_original_id($product_id) === eins_deal_current_id()) {
-        $data['eins_deal_hour'] = eins_deal_hour();
-    }
-
-    return $data;
-}, 10, 2);
-
-/**
- * Cart: discount on items added in their hour (+ hold minutes)
+ * Cart: discount on the deal product until the deal ends
  */
 add_action('woocommerce_cart_calculate_fees', function ($cart) {
-    $hold     = (int) get_theme_mod('deal_hold', 30) * MINUTE_IN_SECONDS;
+    $deal = eins_deal_product();
+    if (!$deal) {
+        return;
+    }
+
+    $deal_id  = eins_offer_original_id($deal->get_id());
     $discount = 0;
 
     foreach ($cart->get_cart() as $item) {
-        if (empty($item['eins_deal_hour']) || time() >= ($item['eins_deal_hour'] + 1) * HOUR_IN_SECONDS + $hold) {
+        if (eins_offer_original_id($item['product_id']) !== $deal_id) {
             continue;
         }
 
@@ -174,6 +173,6 @@ add_action('woocommerce_cart_calculate_fees', function ($cart) {
     }
 
     if ($discount > 0) {
-        $cart->add_fee(__('Deal of the Hour', 'arqamweb'), -$discount);
+        $cart->add_fee(__('Deal of the Month', 'arqamweb'), -$discount);
     }
 });

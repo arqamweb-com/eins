@@ -698,10 +698,6 @@ Template: astra
   color: hsl(var(--foreground));
 }
 
-.eins-deal-card[hidden] {
-  display: none;
-}
-
 @media (min-width: 900px) {
   .eins-deal-card {
     grid-template-columns: 1fr 1.1fr;
@@ -828,11 +824,6 @@ Template: astra
   text-align: center;
 }
 
-.eins-deal-next {
-  margin: 14px 0 0;
-  font-size: 0.9rem;
-  color: hsl(var(--muted-foreground));
-}
 
 @media (prefers-reduced-motion: reduce) {
   .eins-offer-bottle,
