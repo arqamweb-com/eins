@@ -12,7 +12,7 @@ $offer = eins_offer_product();
     <div class="container mx-auto">
         <div class="eins-deal-head animate-fade-up">
             <span class="eins-deal-eyebrow"><?php echo __('Deal of the Hour', 'arqamweb'); ?></span>
-            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium mt-2"><?php echo __('One product · One price · One hour', 'arqamweb'); ?></h2>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium mt-2"><?php echo __('One product · One offer · One month', 'arqamweb'); ?></h2>
         </div>
 
         <!-- كل المنتجات بتترندر، والـ JS بيختار منتج الساعة عشان الكاش ما يثبتش العرض -->

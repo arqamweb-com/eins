@@ -458,6 +458,49 @@ Template: astra
   background: hsl(var(--primary));
 }
 
+/* نفس أنيميشن زرار الإضافة للسلة في استرا */
+.eins-offer-btn.loading {
+  opacity: 0.25;
+}
+
+.eins-offer-btn.loading::after {
+  display: inline-block;
+  content: "";
+  position: relative;
+  top: 0;
+  right: -0.5em;
+  width: 0.8em;
+  height: 0.8em;
+  background-color: currentColor;
+  border-radius: 100%;
+  animation: eins-dot-pulse 0.65s 0s infinite cubic-bezier(0.21, 0.53, 0.56, 0.8);
+}
+
+.eins-offer-btn.added::after {
+  font-family: WooCommerce;
+  content: "\e017";
+  margin-left: 0.53em;
+  vertical-align: bottom;
+}
+
+.eins-offer-ctas a.added_to_cart {
+  display: none;
+}
+
+@keyframes eins-dot-pulse {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
 .eins-offer-meta {
   display: flex;
   flex-wrap: wrap;

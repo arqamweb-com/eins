@@ -11,10 +11,14 @@ $bundle = eins_offer_bundle();
 
 // الزرار بيضيف منتج الباندل (إزازتين)، ولو مش موجود بيضيف إزازتين من منتج العرض
 if ($bundle) {
+    $add_item   = $bundle;
+    $add_qty    = 1;
     $add_link   = $bundle->add_to_cart_url();
     $offer_ins  = (float) wc_get_price_to_display($bundle);
     $offer_del  = (float) wc_get_price_to_display($bundle, ['price' => $bundle->get_regular_price()]);
 } else {
+    $add_item   = $product;
+    $add_qty    = 2;
     $add_link   = add_query_arg('quantity', 2, $product->add_to_cart_url());
     $offer_ins  = $price * 1.5;
     $offer_del  = $price * 2;
@@ -33,7 +37,7 @@ if ($bundle) {
         </p>
 
         <div class="eins-offer-ctas animate-fade-up" style="animation-delay: 0.3s;">
-            <a class="eins-offer-btn" href="<?php echo esc_url($add_link); ?>" rel="nofollow"><?php echo __('Add 2 bottles to cart', 'arqamweb'); ?></a>
+            <a class="eins-offer-btn product_type_<?php echo esc_attr($add_item->get_type()); ?> add_to_cart_button<?php echo $add_item->supports('ajax_add_to_cart') ? ' ajax_add_to_cart' : ''; ?>" href="<?php echo esc_url($add_link); ?>" data-product_id="<?php echo esc_attr($add_item->get_id()); ?>" data-product_sku="<?php echo esc_attr($add_item->get_sku()); ?>" data-quantity="<?php echo esc_attr($add_qty); ?>" rel="nofollow"><?php echo __('Add 2 bottles to cart', 'arqamweb'); ?></a>
             <a class="eins-offer-btn eins-offer-btn--ghost" href="<?php echo esc_url($product->get_permalink()); ?>"><?php echo __('View product', 'arqamweb'); ?></a>
         </div>
 
