@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Offer Pop-up: Reminder للعرض الحالي (Buy 1 Get 50% on second + Free Shipping)
+ * Offer Pop-up: Reminder لعرض الزيت (النصوص جاية من العرض المربوط في بلاجن Arqam Web Offers)
  * بيظهر لأي زائر بعد ثواني أو لما يحاول يخرج / يرجع، وبيتقفل لوحده لما العرض يخلص
  */
 
@@ -86,6 +86,7 @@ add_action('wp_enqueue_scripts', function () {
 function eins_exit_popup_markup()
 {
     $product = eins_offer_product();
+    $offer   = eins_linked_offer('offer_link');
 ?>
     <div class="eins-exit-overlay" id="eins-exit-popup" role="dialog" aria-modal="true" aria-labelledby="eins-exit-title" hidden>
         <div class="eins-exit-modal">
@@ -93,10 +94,10 @@ function eins_exit_popup_markup()
 
             <span class="eins-exit-eyebrow"><?php echo esc_html(get_theme_mod('exit_popup_eyebrow') ?: __('November Offer', 'arqamweb')); ?></span>
             <h3 class="eins-exit-title" id="eins-exit-title"><?php echo esc_html(get_theme_mod('exit_popup_title') ?: __('Don\'t miss this month\'s offer', 'arqamweb')); ?></h3>
-            <p class="eins-exit-text"><?php echo esc_html(get_theme_mod('exit_popup_text') ?: sprintf(__('Order two bottles of %s and get the second one at half price, until the end of November.', 'arqamweb'), $product->get_name())); ?></p>
+            <p class="eins-exit-text"><?php echo esc_html(get_theme_mod('exit_popup_text') ?: Arqam_Offers_Rules::message($offer)); ?></p>
 
             <div class="eins-exit-offer">
-                <span class="eins-exit-offer-amount"><?php echo __('50% OFF the 2nd', 'arqamweb'); ?></span>
+                <span class="eins-exit-offer-amount"><?php echo esc_html(Arqam_Offers_Rules::badge($offer)); ?></span>
                 <span class="eins-exit-offer-plus">+ <?php echo __('Free Shipping', 'arqamweb'); ?></span>
             </div>
 

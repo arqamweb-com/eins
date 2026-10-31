@@ -19,11 +19,6 @@ add_action('customize_register', function ($wp_customize) {
         'description' => 'المنتج والخصم وتاريخ الانتهاء بيتظبطوا من لوحة التحكم > Offers. السكشن بيظهر طول ما العرض المربوط شغال، ولما يخلص أو يتقفل الهوم بيرجع للسلايدر.',
     ]);
 
-    $products = ['' => '— Select —'];
-    foreach (wc_get_products(['status' => 'publish', 'limit' => -1]) as $product) {
-        $products[$product->get_id()] = $product->get_name();
-    }
-
     $wp_customize->add_setting('offer_link', [
         'default'           => 0,
         'sanitize_callback' => 'absint',
@@ -34,18 +29,6 @@ add_action('customize_register', function ($wp_customize) {
         'type'        => 'select',
         'choices'     => eins_offer_choices(),
         'description' => 'لازم يكون عرض على منتجات محددة (Selected products) وليه تاريخ انتهاء عشان العداد.',
-    ]);
-
-    $wp_customize->add_setting('offer_bundle', [
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-    $wp_customize->add_control('offer_bundle', [
-        'label'       => 'Bundle Product (Add 2 bottles button)',
-        'section'     => 'frontend_offer_section',
-        'type'        => 'select',
-        'choices'     => $products,
-        'description' => 'لو فاضي بيدور على منتج اسمه Double Elixir Bundle.',
     ]);
 
     $wp_customize->add_setting('offer_bottle', [
@@ -75,31 +58,6 @@ function eins_offer_end()
 function eins_offer_product()
 {
     $product = eins_linked_offer_product(eins_linked_offer('offer_link'));
-
-    return ($product && $product->is_purchasable()) ? $product : null;
-}
-
-/**
- * Two-bottle bundle in the current language (Customizer, or the "Double Elixir Bundle" product)
- */
-function eins_offer_bundle()
-{
-    $id = (int) get_theme_mod('offer_bundle', 0);
-
-    if (!$id) {
-        $found = get_posts([
-            'post_type'        => 'product',
-            'post_status'      => 'publish',
-            'title'            => 'Double Elixir Bundle',
-            'posts_per_page'   => 1,
-            'fields'           => 'ids',
-            'suppress_filters' => true,
-        ]);
-        $id = $found ? (int) $found[0] : 0;
-    }
-
-    $id = $id ? apply_filters('wpml_object_id', $id, 'product', true) : 0;
-    $product = $id ? wc_get_product($id) : null;
 
     return ($product && $product->is_purchasable()) ? $product : null;
 }
