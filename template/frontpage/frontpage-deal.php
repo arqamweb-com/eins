@@ -1,22 +1,34 @@
 <?php
-// منتج الشهر ثابت (Skin Revive)، والخصم بيتحسب في السلة لحد آخر الشهر
+// منتج الشهر: المنتج والخصم وتاريخ الانتهاء جايين من العرض المربوط في الـ Customizer (بلاجن Arqam Web Offers)
 $product = eins_deal_product();
+$deal    = eins_linked_offer('deal_link');
 
-if (!$product) {
+if (!$product || !$deal) {
     return;
 }
 
-$offer = eins_offer_product();
-
 $price   = (float) wc_get_price_to_display($product);
 $monthly = eins_deal_unit_discount($product, $price);
+$qty     = 1;
+$tag     = '';
+$message = '';
 
-if ($monthly > 0) {
-    $off = round($monthly / $price * 100);
+if ($deal['type'] === 'bxgy') {
+    // اشتري X وخد Y: بنعرض سعر الطقم الكامل (مثلاً قطعتين) قبل وبعد الخصم، وزرار السلة بيضيف الطقم كله
+    $applied = Arqam_Offers_Rules::for_product($product);
+    if ($applied && $applied['id'] === $deal['id']) {
+        $qty      = (int) $deal['buy'] + (int) $deal['get'];
+        $set_full = $price * $qty;
+        $set_off  = Arqam_Offers_Calculator::discount($deal, array_fill(0, $qty, $price));
+        $tag      = Arqam_Offers_Rules::badge($deal);
+        $message  = Arqam_Offers_Rules::message($deal);
+    }
+} elseif ($monthly > 0) {
+    $tag = '-' . round($monthly / $price * 100) . '%';
 } else {
     $regular = (float) $product->get_regular_price();
     $sale    = (float) $product->get_sale_price();
-    $off     = ($product->is_on_sale() && $regular > 0 && $sale > 0) ? round((1 - $sale / $regular) * 100) : 0;
+    $tag     = ($product->is_on_sale() && $regular > 0 && $sale > 0) ? '-' . round((1 - $sale / $regular) * 100) . '%' : '';
 }
 ?>
 <section class="eins-deal section-padding">
@@ -29,8 +41,8 @@ if ($monthly > 0) {
         <div class="eins-deal-list">
             <article class="eins-deal-card">
                 <a href="<?php echo esc_url($product->get_permalink()); ?>" class="eins-deal-img">
-                    <?php if ($off) : ?>
-                        <span class="eins-deal-tag">-<?php echo esc_html($off); ?>%</span>
+                    <?php if ($tag) : ?>
+                        <span class="eins-deal-tag"><?php echo esc_html($tag); ?></span>
                     <?php endif; ?>
                     <?php echo $product->get_image('large'); ?>
                 </a>
@@ -43,15 +55,18 @@ if ($monthly > 0) {
                     <?php endif; ?>
 
                     <div class="eins-deal-price">
-                        <?php if ($monthly > 0) : ?>
+                        <?php if ($qty > 1 && $set_off > 0) : ?>
+                            <span class="eins-deal-qty"><?php echo esc_html($qty); ?>&times;</span>
+                            <del><?php echo wc_price($set_full); ?></del> <ins><?php echo wc_price($set_full - $set_off); ?></ins>
+                        <?php elseif ($monthly > 0) : ?>
                             <del><?php echo wc_price($price); ?></del> <ins><?php echo wc_price($price - $monthly); ?></ins>
                         <?php else : ?>
                             <?php echo $product->get_price_html(); ?>
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($offer && $product->get_id() === $offer->get_id()) : ?>
-                        <p class="eins-deal-offer"><?php echo __('Buy 1 Get 50% on second', 'arqamweb'); ?></p>
+                    <?php if ($message) : ?>
+                        <p class="eins-deal-offer"><?php echo esc_html($message); ?></p>
                     <?php endif; ?>
 
                     <div class="eins-deal-timer" data-eins-deal-end="<?php echo esc_attr(eins_deal_end() * 1000); ?>">
@@ -59,7 +74,7 @@ if ($monthly > 0) {
                         <strong data-eins-deal-timer>00:00:00:00</strong>
                     </div>
 
-                    <?php $GLOBALS['product'] = $product; woocommerce_template_loop_add_to_cart(['class' => 'eins-deal-add button add_to_cart_button ajax_add_to_cart product_type_' . $product->get_type()]); ?>
+                    <?php $GLOBALS['product'] = $product; woocommerce_template_loop_add_to_cart(['quantity' => $qty, 'class' => 'eins-deal-add button add_to_cart_button ajax_add_to_cart product_type_' . $product->get_type()]); ?>
                 </div>
             </article>
         </div>

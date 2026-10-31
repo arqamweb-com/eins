@@ -781,6 +781,13 @@ Template: astra
   text-decoration: none;
 }
 
+/* عدد القطع في عروض "اشتري X وخد Y" (2×) */
+.eins-deal-qty {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-inline-end: 4px;
+}
+
 .eins-deal-offer {
   display: inline-block;
   margin: 0 0 6px;
