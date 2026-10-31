@@ -41,6 +41,10 @@ function eins_get_badge_categories($product_id, $limit = 3)
 function eins_category_badges($product_id = null, $extra = [])
 {
     $product_id = $product_id ?: get_the_ID();
+
+    // بلاجن العروض (Arqam Web Offers) بتضيف بادج العرض هنا
+    $extra = apply_filters('eins_product_badges', $extra, $product_id);
+
     $badges = array_merge(array_filter($extra), eins_get_badge_categories($product_id));
 
     if (!$badges) {

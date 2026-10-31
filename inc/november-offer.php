@@ -1,8 +1,8 @@
 <?php
 
 /**
- * November Offer: Buy 1 Get 50% on the second
- * مؤقت لحد آخر نوفمبر، وبعدها الهوم بيرجع للسلايدر لوحده
+ * November Offer section (home + exit pop-up)
+ * الخصم نفسه بقى في بلاجن Arqam Web Offers، والسكشن بيقرا من العرض المربوط في الـ Customizer
  */
 
 if (!defined('ABSPATH')) {
@@ -16,7 +16,7 @@ add_action('customize_register', function ($wp_customize) {
     $wp_customize->add_section('frontend_offer_section', [
         'title'       => 'November Offer',
         'panel'       => 'frontend_panel',
-        'description' => 'Buy 1 Get 50% on second. الخصم بيتحسب في السلة لوحده، ولما العرض يخلص أو يتقفل الهوم بيرجع للسلايدر.',
+        'description' => 'المنتج والخصم وتاريخ الانتهاء بيتظبطوا من لوحة التحكم > Offers. السكشن بيظهر طول ما العرض المربوط شغال، ولما يخلص أو يتقفل الهوم بيرجع للسلايدر.',
     ]);
 
     $products = ['' => '— Select —'];
@@ -24,25 +24,16 @@ add_action('customize_register', function ($wp_customize) {
         $products[$product->get_id()] = $product->get_name();
     }
 
-    $wp_customize->add_setting('offer_enabled', [
-        'default'           => true,
-        'sanitize_callback' => 'wp_validate_boolean',
-    ]);
-    $wp_customize->add_control('offer_enabled', [
-        'label'   => 'Enable Offer',
-        'section' => 'frontend_offer_section',
-        'type'    => 'checkbox',
-    ]);
-
-    $wp_customize->add_setting('offer_product', [
-        'default'           => 224,
+    $wp_customize->add_setting('offer_link', [
+        'default'           => 0,
         'sanitize_callback' => 'absint',
     ]);
-    $wp_customize->add_control('offer_product', [
-        'label'   => 'Offer Product',
-        'section' => 'frontend_offer_section',
-        'type'    => 'select',
-        'choices' => $products,
+    $wp_customize->add_control('offer_link', [
+        'label'       => 'Linked Offer (Arqam Web Offers)',
+        'section'     => 'frontend_offer_section',
+        'type'        => 'select',
+        'choices'     => eins_offer_choices(),
+        'description' => 'لازم يكون عرض على منتجات محددة (Selected products) وليه تاريخ انتهاء عشان العداد.',
     ]);
 
     $wp_customize->add_setting('offer_bundle', [
@@ -57,17 +48,6 @@ add_action('customize_register', function ($wp_customize) {
         'description' => 'لو فاضي بيدور على منتج اسمه Double Elixir Bundle.',
     ]);
 
-    $wp_customize->add_setting('offer_end', [
-        'default'           => '2026-11-30 23:59',
-        'sanitize_callback' => 'sanitize_text_field',
-    ]);
-    $wp_customize->add_control('offer_end', [
-        'label'       => 'Ends at (Y-m-d H:i)',
-        'section'     => 'frontend_offer_section',
-        'type'        => 'text',
-        'description' => 'بتوقيت الموقع (Settings > General).',
-    ]);
-
     $wp_customize->add_setting('offer_bottle', [
         'default'           => '',
         'sanitize_callback' => 'esc_url_raw',
@@ -80,26 +60,21 @@ add_action('customize_register', function ($wp_customize) {
 });
 
 /**
- * Offer end as a timestamp (0 if the date is invalid)
+ * Offer end as a timestamp, from the linked plugin offer (0 when there is none)
  */
 function eins_offer_end()
 {
-    $end = date_create_immutable(get_theme_mod('offer_end', '2026-11-30 23:59'), wp_timezone());
+    $offer = eins_linked_offer('offer_link');
 
-    return $end ? $end->getTimestamp() : 0;
+    return $offer ? Arqam_Offers_Rules::timestamp($offer['end']) : 0;
 }
 
 /**
- * Offer product in the current language (or null when the offer is off / over)
+ * Offer product in the current language (or null when the linked offer is off / over)
  */
 function eins_offer_product()
 {
-    if (!function_exists('wc_get_product') || !get_theme_mod('offer_enabled', true) || time() >= eins_offer_end()) {
-        return null;
-    }
-
-    $id = apply_filters('wpml_object_id', (int) get_theme_mod('offer_product', 224), 'product', true);
-    $product = $id ? wc_get_product($id) : null;
+    $product = eins_linked_offer_product(eins_linked_offer('offer_link'));
 
     return ($product && $product->is_purchasable()) ? $product : null;
 }
@@ -136,33 +111,3 @@ function eins_offer_original_id($product_id)
 {
     return (int) apply_filters('wpml_object_id', $product_id, 'product', true, apply_filters('wpml_default_language', null));
 }
-
-/**
- * Cart: every second bottle at 50%
- */
-add_action('woocommerce_cart_calculate_fees', function ($cart) {
-    $offer = eins_offer_product();
-    if (!$offer) {
-        return;
-    }
-
-    $offer_id = eins_offer_original_id($offer->get_id());
-    $prices   = [];
-
-    foreach ($cart->get_cart() as $item) {
-        if (eins_offer_original_id($item['product_id']) !== $offer_id) {
-            continue;
-        }
-        for ($i = 0; $i < $item['quantity']; $i++) {
-            $prices[] = (float) $item['data']->get_price();
-        }
-    }
-
-    // الأرخص هو اللي بياخد الخصم لو الأسعار مختلفة
-    sort($prices);
-    $discount = array_sum(array_slice($prices, 0, intdiv(count($prices), 2))) * 0.5;
-
-    if ($discount > 0) {
-        $cart->add_fee(__('Buy 1 Get 50% on second', 'arqamweb'), -$discount);
-    }
-});
