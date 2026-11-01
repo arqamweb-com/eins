@@ -17,7 +17,7 @@ add_action('customize_register', function ($wp_customize) {
     $wp_customize->add_section('frontend_exit_popup_section', [
         'title'       => 'Offer Pop-up',
         'panel'       => 'frontend_panel',
-        'description' => 'Reminder للعرض اللي في Front End > November Offer. بيظهر بس طول ما العرض شغال. سيب النصوص فاضية عشان تاخد الافتراضي بالعربي والإنجليزي.',
+        'description' => 'Reminder للعرض اللي في Front End > November Offer. بيظهر مرة في كل زيارة وطول ما العرض شغال بس. سيب النصوص فاضية عشان تاخد الافتراضي بالعربي والإنجليزي.',
     ]);
 
     $fields = [
@@ -27,7 +27,6 @@ add_action('customize_register', function ($wp_customize) {
         'exit_popup_text'     => ['label' => 'Text', 'type' => 'textarea', 'default' => ''],
         'exit_popup_button'   => ['label' => 'Button Text', 'type' => 'text', 'default' => ''],
         'exit_popup_delay'    => ['label' => 'Show after (seconds, 0 = exit only)', 'type' => 'number', 'default' => 8],
-        'exit_popup_days'     => ['label' => 'Hide after closing (days)', 'type' => 'number', 'default' => 1],
     ];
 
     foreach ($fields as $id => $field) {
@@ -77,7 +76,6 @@ add_action('wp_enqueue_scripts', function () {
 
     wp_localize_script('eins-exit-popup', 'einsExitPopup', [
         'delay' => (int) get_theme_mod('exit_popup_delay', 8),
-        'days'  => (int) get_theme_mod('exit_popup_days', 1),
     ]);
 
     add_action('wp_footer', 'eins_exit_popup_markup');

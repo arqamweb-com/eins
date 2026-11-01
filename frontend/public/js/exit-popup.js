@@ -3,16 +3,33 @@
   const popup = document.getElementById("eins-exit-popup");
   if (!popup || typeof einsExitPopup === "undefined") return;
 
-  const HIDE_KEY = "einsExitHideUntil";
   const SHOWN_KEY = "einsExitShown";
   const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
   let backTrapSet = false;
 
+  // زيارة جديدة = جاي من برة الموقع (جوجل، سوشيال، رابط مكتوب) مش Reload ولا تنقل جوه الموقع
+  // ساعتها البوب أب يظهر تاني حتى لو اتقفل في الزيارة اللي فاتت
+  const isNewVisit = () => {
+    const nav = performance.getEntriesByType("navigation")[0];
+    if (nav && nav.type !== "navigate") return false;
+    if (!document.referrer) return true;
+    try {
+      return new URL(document.referrer).host !== location.host;
+    } catch (e) {
+      return true;
+    }
+  };
+
+  try {
+    localStorage.removeItem("einsExitHideUntil"); // المفتاح القديم بتاع "اخفيه كام يوم"
+    if (isNewVisit()) sessionStorage.removeItem(SHOWN_KEY);
+  } catch (e) {}
+
+  // مرة واحدة في كل زيارة
   const isSuppressed = () => {
     try {
-      if (sessionStorage.getItem(SHOWN_KEY)) return true;
-      return Date.now() < Number(localStorage.getItem(HIDE_KEY) || 0);
+      return !!sessionStorage.getItem(SHOWN_KEY);
     } catch (e) {
       return false;
     }
@@ -35,13 +52,6 @@
   const close = () => {
     popup.classList.remove("is-open");
     setTimeout(() => (popup.hidden = true), 300);
-
-    const days = Number(einsExitPopup.days) || 0;
-    if (days > 0) {
-      try {
-        localStorage.setItem(HIDE_KEY, String(Date.now() + days * 864e5));
-      } catch (e) {}
-    }
   };
 
   // بعد عدد ثواني من الـ Customizer
