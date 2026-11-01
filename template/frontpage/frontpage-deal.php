@@ -40,11 +40,21 @@ if ($deal['type'] === 'bxgy') {
 
         <div class="eins-deal-list">
             <article class="eins-deal-card">
-                <a href="<?php echo esc_url($product->get_permalink()); ?>" class="eins-deal-img">
+                <?php $bottle = eins_deal_bottle(); ?>
+                <a href="<?php echo esc_url($product->get_permalink()); ?>" class="eins-deal-img<?php echo $bottle ? ' eins-deal-img--pair' : ''; ?>">
                     <?php if ($tag) : ?>
                         <span class="eins-deal-tag"><?php echo esc_html($tag); ?></span>
                     <?php endif; ?>
-                    <?php echo $product->get_image('large'); ?>
+                    <?php if ($bottle) : ?>
+                        <span class="eins-deal-ring" aria-hidden="true"></span>
+                        <?php
+                        // إزازتين من نفس الصورة: بيدخلوا من الجنبين لما السكشن يظهر وبعدين بيتنفّسوا
+                        echo wp_get_attachment_image($bottle, 'large', false, ['class' => 'eins-deal-bottle eins-deal-bottle--1', 'alt' => $product->get_name(), 'sizes' => '(min-width: 900px) 300px, 45vw']);
+                        echo wp_get_attachment_image($bottle, 'large', false, ['class' => 'eins-deal-bottle eins-deal-bottle--2', 'alt' => '', 'aria-hidden' => 'true', 'sizes' => '(min-width: 900px) 300px, 45vw']);
+                        ?>
+                    <?php else : ?>
+                        <?php echo $product->get_image('large'); ?>
+                    <?php endif; ?>
                 </a>
 
                 <div class="eins-deal-body">
@@ -98,5 +108,24 @@ if ($deal['type'] === 'bxgy') {
 
         tick();
         setInterval(tick, 1000);
+    });
+
+    // أنيميشن الإزازتين: بيبدأ أول ما الصورة تظهر في الشاشة
+    document.addEventListener("DOMContentLoaded", () => {
+        const pair = document.querySelector(".eins-deal-img--pair");
+        if (!pair) return;
+
+        const start = () => {
+            pair.classList.add("is-in");
+            setTimeout(() => pair.classList.add("is-settled"), 1300);
+        };
+
+        if (!("IntersectionObserver" in window)) return start();
+
+        new IntersectionObserver(([entry], observer) => {
+            if (!entry.isIntersecting) return;
+            start();
+            observer.disconnect();
+        }, { threshold: 0.4 }).observe(pair);
     });
 </script>

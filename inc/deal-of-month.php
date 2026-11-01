@@ -30,7 +30,29 @@ add_action('customize_register', function ($wp_customize) {
         'choices'     => eins_offer_choices(),
         'description' => 'لازم يكون عرض على منتجات محددة (Selected products) وليه تاريخ انتهاء عشان العداد.',
     ]);
+
+    // صورة الإزازة اللي بتتكرر مرتين في السكشن (بنخزن الـ ID عشان نختار المقاس)
+    $wp_customize->add_setting('deal_bottle', [
+        'default'           => 708,
+        'sanitize_callback' => 'absint',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'deal_bottle', [
+        'label'       => 'Bottle Image (transparent PNG)',
+        'section'     => 'frontend_deal_section',
+        'mime_type'   => 'image',
+        'description' => 'بتتعرض إزازتين منها بأنيميشن. لو فاضية بتتعرض صورة المنتج العادية.',
+    ]));
 });
+
+/**
+ * Bottle image attachment ID for the deal section (0 = use the product image)
+ */
+function eins_deal_bottle()
+{
+    $id = absint(get_theme_mod('deal_bottle', 708));
+
+    return ($id && wp_attachment_is_image($id)) ? $id : 0;
+}
 
 /**
  * Deal end as a timestamp, from the linked plugin offer (0 when there is none)
